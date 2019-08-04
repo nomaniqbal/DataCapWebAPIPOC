@@ -1,0 +1,50 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29123.89
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.Client", "WebApi.Client\WebApi.Client.csproj", "{782CCE92-EF4C-48AC-8A6B-EF0AF91D4A1E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientCertificates", "ClientCertificates", "{F3E02E05-C3D1-4E05-A38B-A4F0C9A4411D}"
+	ProjectSection(SolutionItems) = preProject
+		ClientCertificates\Password.txt = ClientCertificates\Password.txt
+		ClientCertificates\UserA_SelfSignedCertificate.pfx = ClientCertificates\UserA_SelfSignedCertificate.pfx
+		ClientCertificates\UserB_SelfSignedCertificate.pfx = ClientCertificates\UserB_SelfSignedCertificate.pfx
+		ClientCertificates\UserC_SelfSignedCertificate.pfx = ClientCertificates\UserC_SelfSignedCertificate.pfx
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.Server", "WebApi.Server\WebApi.Server.csproj", "{7CCF3CF8-3A3F-49CD-BD9F-C7640E1E7812}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.Shared", "WebApi.Shared\WebApi.Shared.csproj", "{6DB55133-F54E-4E3E-AA7F-45FD123E728D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4636E39D-3D85-41DD-8382-CFA301BCDFEE}"
+	ProjectSection(SolutionItems) = preProject
+		ReadMe.txt = ReadMe.txt
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{782CCE92-EF4C-48AC-8A6B-EF0AF91D4A1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{782CCE92-EF4C-48AC-8A6B-EF0AF91D4A1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{782CCE92-EF4C-48AC-8A6B-EF0AF91D4A1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{782CCE92-EF4C-48AC-8A6B-EF0AF91D4A1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CCF3CF8-3A3F-49CD-BD9F-C7640E1E7812}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CCF3CF8-3A3F-49CD-BD9F-C7640E1E7812}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CCF3CF8-3A3F-49CD-BD9F-C7640E1E7812}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CCF3CF8-3A3F-49CD-BD9F-C7640E1E7812}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DB55133-F54E-4E3E-AA7F-45FD123E728D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DB55133-F54E-4E3E-AA7F-45FD123E728D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DB55133-F54E-4E3E-AA7F-45FD123E728D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DB55133-F54E-4E3E-AA7F-45FD123E728D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D804FF8F-9944-4453-871F-B5B30BFC657B}
+	EndGlobalSection
+EndGlobal

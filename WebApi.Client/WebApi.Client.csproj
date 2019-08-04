@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <RootNamespace>WebApi.Client</RootNamespace>
+    <FileVersion>1.19.0804.38</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NetCore8583" Version="1.0.0" />
+    <PackageReference Include="RestSharp" Version="106.6.10" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebApi.Shared\WebApi.Shared.csproj" />
+  </ItemGroup>
+
+</Project>
