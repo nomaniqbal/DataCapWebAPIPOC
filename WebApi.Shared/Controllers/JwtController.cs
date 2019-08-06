@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 using Microsoft.IdentityModel.Tokens;
 
 using WebApi.Shared.Entities;
-using WebApi.Shared.Utilites;
+using WebApi.Shared.Utilities;
 
 namespace WebApi.Shared.Controllers
 {
@@ -42,6 +43,8 @@ namespace WebApi.Shared.Controllers
     {
         // uniquely identifies the party this JWT carries information about (used in JWT Token)
         public static readonly string AUDIENCE = @"https://www.worldpay.com/";
+        public static readonly string BODYHASH_CLAIM_NAME = @"bodyhash";
+        public static readonly string HASHTYPE_CLAIM_NAME = @"hashtype";
 
         /// <summary>Creates the JWT token.</summary>
         /// <param name="userName"></param>
@@ -49,9 +52,14 @@ namespace WebApi.Shared.Controllers
         /// <param name="audience">The audience.</param>
         /// <returns>System.String.</returns>
         /// <remarks>This would be used on the client side</remarks>
-        public static string CreateJWTToken(string userName, string subject, string audience)
+        public static string CreateJWTToken(string userName, string subject, string audience, int ttlMinutes, string httpBody)
         {
             var userInfo = UserController.GetUserInfo(userName);
+
+            if(ttlMinutes < 1 || ttlMinutes > 10)
+            {
+                throw new ArgumentException($"ttlMinutes paramter value of: [{ttlMinutes}] must be from 1 to 10");
+            }
 
             // Load the Certificate
             var certificate = CertificateController.GetCertificateWithThumbprint(userInfo.KeyThumbprint);
@@ -64,12 +72,27 @@ namespace WebApi.Shared.Controllers
 
             // Define the JWT Payload
             //  Note: the specifc content required for this use case (Purchase Auth) needs to be determined
-            var payload = new JwtPayload
+            JwtPayload payload = null;
+            if (!string.IsNullOrEmpty(httpBody))
             {
-               { "sub", subject },
-               { "aud", audience },
-               { "exp", DateTime.UtcNow.AddMinutes(15).ToEpochSeconds() },
-            };
+                payload = new JwtPayload
+                            {
+                               { "sub", subject },
+                               { "aud", audience },
+                               { "exp", DateTime.UtcNow.AddMinutes(ttlMinutes).ToEpochSeconds() },
+                               { BODYHASH_CLAIM_NAME, httpBody.SHA256Hash() },
+                               { HASHTYPE_CLAIM_NAME, @"sha256" }
+                            };
+            }
+            else
+            {
+                payload = new JwtPayload
+                            {
+                               { "sub", subject },
+                               { "aud", audience },
+                               { "exp", DateTime.UtcNow.AddMinutes(15).ToEpochSeconds() },
+                            };
+            }
 
             // create the JWT
             var secToken = new JwtSecurityToken(header, payload);
@@ -80,7 +103,7 @@ namespace WebApi.Shared.Controllers
 
             /*
                 Sample JWT generated             
-                eyJhbGciOiJSUzI1NiIsImtpZCI6IjFERTJERjQ2NkQyMTg4RDMyRjc0ODdCMjlCQzc2OTExNURDNTM0NzIiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5kYXRhY2Fwc3lzdGVtcy5jb20vIiwiYXVkIjoiaHR0cHM6Ly93d3cud29ybGRwYXkuY29tLyIsImV4cCI6MTU2NDk0MjEwN30.mwwaFczSPP1_EMDcgAdXIbf3hwHw26nTv-kG4b1_EH9q8TFrNMmPMjayyWzHDizbwF-As-6AppaNlMbEQFp-ilXLCx_MAgvff1vNA_qA_wh_t0rcsUO_Evbn5lapoDOCom97cddSIywUnb4zA14TRlrttfuOnpkj08WaR2WM38unpKjBpIHYZJYrrG5Gzyyjs2uzPfCydOCcXVuv3xcVTbmgDGVraDswDMF0xVKHwrFNG9HLfCsJhgA14_puVELPRceuXa_o-u9o05U8-BRrzvyEOxobpXc_z6c0FlnA5OcTGbVDChCASal-8kXjaZYzk1dF-FBQxK3Sj75wCi3IYg
+                eyJhbGciOiJSUzI1NiIsImtpZCI6IjFERTJERjQ2NkQyMTg4RDMyRjc0ODdCMjlCQzc2OTExNURDNTM0NzIiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5kYXRhY2Fwc3lzdGVtcy5jb20vIiwiYXVkIjoiaHR0cHM6Ly93d3cud29ybGRwYXkuY29tLyIsImV4cCI6MTU2NTAzNjcyMCwiYm9keWhhc2giOiI4NTFkOTNkMjMwYmE0ZThiMzVkNWE1ZjUwYWY3N2Q2MDgxNmJiY2ZjZGM4NWE4ODUwODZkMzhiZDVjMzM5NjViIiwiaGFzaHR5cGUiOiJzaGEyNTYifQ.bD_Aw72U9niNcy_SWdmmSyb_bcpWe6itbni5D0TunC3lf3_SkGWwnWKRlWViwp59VtC6Vj0B3M5ouXvQ1aI4ehsB6R03uAMkh4zW5HQKhccbInhtpNSeOmGh2IsjZfBK2w8_gs7z3Wsqhvio9N2PTWq9wtAuVUdNCeaBBhtsr_WP8QQjLpm0GswqGLARZc07Rw6bxOIHASsF-4Doy-huDLmydBggjO5YS2y2Wp2_MFmCIawCYvnnrSnhxzvZ1iz7bIwHX614VPlDHc2PlspLp7Lal5oJTOBoh284njuOgVlxwKaW2YjZS0W3dmUgNrro3_JDEvWeJvvgiRXk58bXdw
 
                 using https://jwt.io/
                 Header
@@ -94,7 +117,9 @@ namespace WebApi.Shared.Controllers
                 {
                   "sub": "https://www.datacapsystems.com/",
                   "aud": "https://www.worldpay.com/",
-                  "exp": 1564942107
+                  "exp": 1565036720,
+                  "bodyhash": "851d93d230ba4e8b35d5a5f50af77d60816bbcfcdc85a885086d38bd5c33965b",
+                  "hashtype": "sha256"
                 }
             */
 
@@ -107,7 +132,7 @@ namespace WebApi.Shared.Controllers
         /// <returns>
         ///   <c>true</c> if XXXX, <c>false</c> otherwise.</returns>
         /// <remarks>This would be used server side</remarks>
-        public static (bool isTokenValid, string validatedUsername) ValidateJWTToken(string jwtTokenString, string audience)
+        public static (bool isTokenValid, string validatedUsername, JwtSecurityToken jwtToken) ValidateJWTToken(string jwtTokenString, string audience)
         {
             // determine who the caller claims to be (as identified by the private key they used)
             // the private key they used is identified by the kid parameter in the JWT header
@@ -120,19 +145,19 @@ namespace WebApi.Shared.Controllers
             if (userInfo == null)
             {
                 // fail if thumbprint is not associated with a user in our user repo
-                return (false, string.Empty);
+                return (false, string.Empty, null);
             }
 
             if (!userInfo.IsEnabled)
             {
                 // fail if user is marked disabled in the User Repo
-                return (false, string.Empty);
+                return (false, string.Empty, null);
             }
 
             if (jwtToken.Payload.Sub.ToLower() != userInfo.Company.ToLower())
             {
                 // fail if sub(ject) value in token payload does not match the value on the user record
-                return (false, string.Empty);
+                return (false, string.Empty, null);
             }
 
             // load the cert we want to use to validate the JWT
@@ -161,14 +186,37 @@ namespace WebApi.Shared.Controllers
                 handler.ValidateToken(jwtTokenString, validationParameters, out validatedToken);
 
                 // validation succeeded
-                return (true, userInfo.User);
+                return (true, userInfo.User, jwtToken);
             }
             catch
             {
                 // validation fails
-                return (false, string.Empty);
+                return (false, string.Empty, null);
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="jwtPayload"></param>
+        /// <returns></returns>
+        public static (string hashType, string bodyHash) GetBodyHashInfo(JwtPayload jwtPayload)
+        {
+            string hashType = string.Empty;
+            string bodyHash = string.Empty;
+
+            if (jwtPayload.ContainsKey(HASHTYPE_CLAIM_NAME))
+            {
+                hashType = jwtPayload[HASHTYPE_CLAIM_NAME].ToString();
+            }
+
+            if (jwtPayload.ContainsKey(BODYHASH_CLAIM_NAME))
+            {
+                bodyHash = jwtPayload[BODYHASH_CLAIM_NAME].ToString();
+            }
+
+
+            return (hashType, bodyHash);
+        }
     }
 }

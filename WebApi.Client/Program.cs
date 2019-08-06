@@ -16,6 +16,7 @@ using RestSharp;
 using WebApi.Shared.Controllers;
 using WebApi.Client.ISO8583;
 using WebApi.Shared.Entities;
+using System.Linq;
 
 namespace WebApi.Client
 {
@@ -31,6 +32,8 @@ namespace WebApi.Client
         /// </summary>
         static void ConsoleLoop()
         {
+            const int MOD_PAYLOAD_OPTION = 99;
+
             // load the list of available users
             var users = UserController.LoadUsers();
 
@@ -49,6 +52,10 @@ namespace WebApi.Client
 
                 userIdx++;
             }
+
+            var goodTestUser = users.Where(u => u.IsEnabled == true).FirstOrDefault();
+
+            sb.AppendLine($" [{MOD_PAYLOAD_OPTION}] {goodTestUser.User} (Modified Body)");
             sb.AppendLine(" <enter> to exit");
             sb.AppendLine();
             
@@ -87,12 +94,17 @@ namespace WebApi.Client
                     if (choiceIndex == 0)
                     {
                         selectedUser = new UserIdentityBE() { User = @"Anonymous" };
-                        Console.WriteLine($" ==> Ready to sent anonymous request");
+                        Console.WriteLine($" ==> Ready to send anonymous request");
+                    }
+                    else if (choiceIndex == MOD_PAYLOAD_OPTION)
+                    {
+                        selectedUser = goodTestUser;
+                        Console.WriteLine($" ==> Ready to send request with tampered body");
                     }
                     else if (choiceIndex > 0 && choiceIndex <= users.Count)
                     {
                         selectedUser = users[choiceIndex - 1];
-                        Console.WriteLine($" ==> Ready to sent request for: {selectedUser.User} [{selectedUser.Company}].");
+                        Console.WriteLine($" ==> Ready to send request for: {selectedUser.User} [{selectedUser.Company}].");
                     }
 
                     if (selectedUser == null)
@@ -102,9 +114,19 @@ namespace WebApi.Client
                     }
                     else
                     {
-                        string jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE) : string.Empty;
+                        // this should be as short as possible to limit ability to fradualently reuse, 
+                        //  but long enough to tolerate clock skew between client and service
+                        int ttlMinutes = 2; 
+                        AuthCRequestBE authcRequest = IsoMsgBuilder.GetAuthMsg();
+                        string httpBody = authcRequest.ToString();
+                        string jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
+                        
+                        if(choiceIndex == MOD_PAYLOAD_OPTION)
+                        {
+                            httpBody = httpBody + "123";
+                        }
 
-                        (HttpStatusCode responseCode, string content) = CallWebApi(jwtToken);
+                        (HttpStatusCode responseCode, string content) = CallWebApiPost(jwtToken, httpBody);
 
                         if (responseCode == HttpStatusCode.OK)
                         {
@@ -134,10 +156,10 @@ namespace WebApi.Client
             }
         }
 
-        /// <summary>Calls the web API.</summary>
+        /// <summary>Calls the web API get endpoint.</summary>
         /// <param name="jwtToken">The JWT token.</param>
         /// <returns>System.ValueTuple&lt;HttpStatusCode, System.String&gt;.</returns>
-        static (HttpStatusCode responseCode, string content) CallWebApi(string jwtToken)
+        static (HttpStatusCode responseCode, string content) CallWebApiGet(string jwtToken)
         {
             // build the url 
             string baseWebUrl = @"localhost:44346";
@@ -146,6 +168,36 @@ namespace WebApi.Client
             var client = new RestClient(url);
 
             var request = new RestRequest("/api/values", Method.GET);
+
+            // if a JWT is available, add a Bearer Auth Token
+            if (!string.IsNullOrEmpty(jwtToken))
+            {
+                request.AddHeader("Authorization", $"Bearer {jwtToken}");
+            }
+
+            // call the WebAPI
+            IRestResponse response = client.Execute(request);
+            var responseCode = response.StatusCode;
+            var content = response.Content;
+
+            // return the response
+            return (responseCode, content);
+        }
+
+        /// <summary>Calls the web API post endpoint.</summary>
+        /// <param name="jwtToken">The JWT token.</param>
+        /// <param name="bodyContent">The Content to post in the request body</param>
+        /// <returns>System.ValueTuple&lt;HttpStatusCode, System.String&gt;.</returns>
+        static (HttpStatusCode responseCode, string content) CallWebApiPost(string jwtToken, string bodyContent)
+        {
+            // build the url 
+            string baseWebUrl = @"localhost:44346";
+            string url = string.Format($"https://{baseWebUrl}");
+
+            var client = new RestClient(url);
+
+            var request = new RestRequest("/api/values", Method.POST, DataFormat.Json);
+            request.AddBody(bodyContent);
 
             // if a JWT is available, add a Bearer Auth Token
             if (!string.IsNullOrEmpty(jwtToken))

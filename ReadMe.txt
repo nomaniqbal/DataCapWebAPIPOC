@@ -29,36 +29,43 @@ HTTP Traces
 -----------------------------------------------------------------
 Typical for http request w/o an Auth Header
 -----------------------------------------------------------------
-GET https://localhost:44346/api/values HTTP/1.1
-Host: localhost:44346
+POST https://localhost:44346/api/values HTTP/1.1
 Accept: application/json, text/json, text/x-json, text/javascript, application/xml, text/xml
 User-Agent: RestSharp/106.6.10.0
 Connection: Keep-Alive
 Accept-Encoding: gzip, deflate
+Content-Type: application/json
+Content-Length: 741
+Host: localhost:44346
+
+{"ISO8583_BASE64":"AhkwMjAw8jxEgQCAgCAAAAAAAAAAIjE2NTQ5OTk5MDEyMzQ1Njc4MTAwMzAwMDAwMDAwMDAwMDAyODA4MDExODQ2MTAwMDAwNDUxMjQ2MTAwODAxMjAwNTU4MTIwMTEwMDA2MDIzNDAwMTQ2NjMgICA4NDAwMTIwMDAwMDEwMDAwMDEwMTUyMTExMDE2NTQwMDExMDEwMDAzODREAAQAAAAAADMyYzBmM2VlOTA1ODU1NDMzNzg2ZGE0MTdmZTFiNDNjNTcxMTAwMzM1MjE0QWRkaXRpb25hbERhdGExMTAyMTFFeHRlcm5hbFRJRDE4MTAxMzI2NjUyMThHbG9iYWxQT1NFbnRyeU1vZGUyMTIyMTAxMDA3MDAwMDAyMjBHbG9iYWxQcm9jZXNzaW5nQ29kZTE2MDAzMDAwMjE4R2xvYmFsVGVybWluYWxUeXBlMTNEQzIxNkxhbmVJRDEwMjEwTWFya2V0RGF0YTIxM2FGdDAwMDAwMDAwMDEyMThQdXJjaGFzaW5nQ2FyZERhdGEyOTA8P3htbCB2ZXJzaW9uPSIxLjAiIGVuY29kaW5nPSJ1dGYtOCI/PjxQdXJjaGFzaW5nQ2FyZERhdGE+PENvbnRhY3QgLz48L1B1cmNoYXNpbmdDYXJkRGF0YT4yMTdUcmFuc2FjdGlvblN0YXR1czExMDIxN1Zpc2FFQ29tbUdvb2RzSW5kMTA="}
 
 HTTP/1.1 401 Unauthorized
 Transfer-Encoding: chunked
 Content-Type: application/problem+json; charset=utf-8
 Server: Microsoft-IIS/10.0
 X-Powered-By: ASP.NET
-Date: Sun, 04 Aug 2019 18:08:25 GMT
+Date: Tue, 06 Aug 2019 18:46:18 GMT
 
 8f
-{"type":"https://tools.ietf.org/html/rfc7235#section-3.1","title":"Unauthorized","status":401,"traceId":"8000001d-0002-fd00-b63f-84710c7967bb"}
+{"type":"https://tools.ietf.org/html/rfc7235#section-3.1","title":"Unauthorized","status":401,"traceId":"8000000a-0002-ff00-b63f-84710c7967bb"}
 0
-
 
 
 -----------------------------------------------------------------
 Typical for UserA & UserB which are "valid" (recognized & enabled)
 -----------------------------------------------------------------
-GET https://localhost:44346/api/values HTTP/1.1
-Host: localhost:44346
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjFERTJERjQ2NkQyMTg4RDMyRjc0ODdCMjlCQzc2OTExNURDNTM0NzIiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5kYXRhY2Fwc3lzdGVtcy5jb20vIiwiYXVkIjoiaHR0cHM6Ly93d3cud29ybGRwYXkuY29tLyIsImV4cCI6MTU2NDk0MjEwN30.mwwaFczSPP1_EMDcgAdXIbf3hwHw26nTv-kG4b1_EH9q8TFrNMmPMjayyWzHDizbwF-As-6AppaNlMbEQFp-ilXLCx_MAgvff1vNA_qA_wh_t0rcsUO_Evbn5lapoDOCom97cddSIywUnb4zA14TRlrttfuOnpkj08WaR2WM38unpKjBpIHYZJYrrG5Gzyyjs2uzPfCydOCcXVuv3xcVTbmgDGVraDswDMF0xVKHwrFNG9HLfCsJhgA14_puVELPRceuXa_o-u9o05U8-BRrzvyEOxobpXc_z6c0FlnA5OcTGbVDChCASal-8kXjaZYzk1dF-FBQxK3Sj75wCi3IYg
+POST https://localhost:44346/api/values HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjFERTJERjQ2NkQyMTg4RDMyRjc0ODdCMjlCQzc2OTExNURDNTM0NzIiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5kYXRhY2Fwc3lzdGVtcy5jb20vIiwiYXVkIjoiaHR0cHM6Ly93d3cud29ybGRwYXkuY29tLyIsImV4cCI6MTU2NTExNzE4NiwiYm9keWhhc2giOiI2MDQwM2JiZDYzNTU0OWFmMzg4NjFkN2UyNzM5MTMyOWM4ZTQzMzk1N2JhMWUwZWNhOTJjZWVkZDAyZjFmODIzIiwiaGFzaHR5cGUiOiJzaGEyNTYifQ.cLpIelisj5sviPlZU0ryQSO9gxYnVCUC_l6hPARx1kbzB-mx32TAzNiGK_OgbLmAiIcmBCdVIyzmDjj2gHNs__hGbrAyvutd81jBDk0nkVvZtq6yr4DdcFkiQGVLhJlY7iaNnORMUtyiR7RuFbcu7QkGqLRVsNUjo6mWeLtXqpNGjN_xqbGXDvDgKNQpz4lmN6_zvx3DR4s8VWNCLKYCCBGkdYwXox9q54m2vEWARBAATT2OdOewFL0tEhawBzT28I3Pyijq8-Z1ty5OnCzRYT1gbWEkgN5jw5vrxwCen188oWSp8cayOyb-sada6dcH0j5E8P9T1Ia4G757-kugOA
 Accept: application/json, text/json, text/x-json, text/javascript, application/xml, text/xml
 User-Agent: RestSharp/106.6.10.0
 Connection: Keep-Alive
 Accept-Encoding: gzip, deflate
+Content-Type: application/json
+Content-Length: 741
+Host: localhost:44346
+
+{"ISO8583_BASE64":"AhkwMjAw8jxEgQCAgCAAAAAAAAAAIjE2NTQ5OTk5MDEyMzQ1Njc4MTAwMzAwMDAwMDAwMDAwMDAyODA4MDExODQ2MTAwMDAwNDUxMjQ2MTAwODAxMjAwNTU4MTIwMTEwMDA2MDIzNDAwMTQ2NjMgICA4NDAwMTIwMDAwMDEwMDAwMDEwMTUyMTExMDE2NTQwMDExMDEwMDAzODREAAQAAAAAADMyYzBmM2VlOTA1ODU1NDMzNzg2ZGE0MTdmZTFiNDNjNTcxMTAwMzM1MjE0QWRkaXRpb25hbERhdGExMTAyMTFFeHRlcm5hbFRJRDE4MTAxMzI2NjUyMThHbG9iYWxQT1NFbnRyeU1vZGUyMTIyMTAxMDA3MDAwMDAyMjBHbG9iYWxQcm9jZXNzaW5nQ29kZTE2MDAzMDAwMjE4R2xvYmFsVGVybWluYWxUeXBlMTNEQzIxNkxhbmVJRDEwMjEwTWFya2V0RGF0YTIxM2FGdDAwMDAwMDAwMDEyMThQdXJjaGFzaW5nQ2FyZERhdGEyOTA8P3htbCB2ZXJzaW9uPSIxLjAiIGVuY29kaW5nPSJ1dGYtOCI/PjxQdXJjaGFzaW5nQ2FyZERhdGE+PENvbnRhY3QgLz48L1B1cmNoYXNpbmdDYXJkRGF0YT4yMTdUcmFuc2FjdGlvblN0YXR1czExMDIxN1Zpc2FFQ29tbUdvb2RzSW5kMTA="}
 
 
 Using https://jwt.io to analyze the token...
@@ -74,7 +81,9 @@ Payload
 {
   "sub": "https://www.datacapsystems.com/",
   "aud": "https://www.worldpay.com/",
-  "exp": 1564942107
+  "exp": 1565117186,
+  "bodyhash": "60403bbd635549af38861d7e27391329c8e433957ba1e0eca92ceedd02f1f823",
+  "hashtype": "sha256"
 }
 
 
@@ -83,10 +92,10 @@ Transfer-Encoding: chunked
 Content-Type: application/json; charset=utf-8
 Server: Microsoft-IIS/10.0
 X-Powered-By: ASP.NET
-Date: Sun, 04 Aug 2019 18:08:28 GMT
+Date: Tue, 06 Aug 2019 18:46:27 GMT
 
-266
-{"isValid":true,"user":"UserA","jwtToken":"eyJhbGciOiJSUzI1NiIsImtpZCI6IjFERTJERjQ2NkQyMTg4RDMyRjc0ODdCMjlCQzc2OTExNURDNTM0NzIiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5kYXRhY2Fwc3lzdGVtcy5jb20vIiwiYXVkIjoiaHR0cHM6Ly93d3cud29ybGRwYXkuY29tLyIsImV4cCI6MTU2NDk0MjEwN30.mwwaFczSPP1_EMDcgAdXIbf3hwHw26nTv-kG4b1_EH9q8TFrNMmPMjayyWzHDizbwF-As-6AppaNlMbEQFp-ilXLCx_MAgvff1vNA_qA_wh_t0rcsUO_Evbn5lapoDOCom97cddSIywUnb4zA14TRlrttfuOnpkj08WaR2WM38unpKjBpIHYZJYrrG5Gzyyjs2uzPfCydOCcXVuv3xcVTbmgDGVraDswDMF0xVKHwrFNG9HLfCsJhgA14_puVELPRceuXa_o-u9o05U8-BRrzvyEOxobpXc_z6c0FlnA5OcTGbVDChCASal-8kXjaZYzk1dF-FBQxK3Sj75wCi3IYg"}
+2e9
+{"isValid":true,"user":"UserA","jwtToken":"eyJhbGciOiJSUzI1NiIsImtpZCI6IjFERTJERjQ2NkQyMTg4RDMyRjc0ODdCMjlCQzc2OTExNURDNTM0NzIiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5kYXRhY2Fwc3lzdGVtcy5jb20vIiwiYXVkIjoiaHR0cHM6Ly93d3cud29ybGRwYXkuY29tLyIsImV4cCI6MTU2NTExNzE4NiwiYm9keWhhc2giOiI2MDQwM2JiZDYzNTU0OWFmMzg4NjFkN2UyNzM5MTMyOWM4ZTQzMzk1N2JhMWUwZWNhOTJjZWVkZDAyZjFmODIzIiwiaGFzaHR5cGUiOiJzaGEyNTYifQ.cLpIelisj5sviPlZU0ryQSO9gxYnVCUC_l6hPARx1kbzB-mx32TAzNiGK_OgbLmAiIcmBCdVIyzmDjj2gHNs__hGbrAyvutd81jBDk0nkVvZtq6yr4DdcFkiQGVLhJlY7iaNnORMUtyiR7RuFbcu7QkGqLRVsNUjo6mWeLtXqpNGjN_xqbGXDvDgKNQpz4lmN6_zvx3DR4s8VWNCLKYCCBGkdYwXox9q54m2vEWARBAATT2OdOewFL0tEhawBzT28I3Pyijq8-Z1ty5OnCzRYT1gbWEkgN5jw5vrxwCen188oWSp8cayOyb-sada6dcH0j5E8P9T1Ia4G757-kugOA"}
 0
 
 
@@ -94,24 +103,49 @@ Date: Sun, 04 Aug 2019 18:08:28 GMT
 -----------------------------------------------------------------
 Typical for UserC which is "disabled"
 -----------------------------------------------------------------
-GET https://localhost:44346/api/values HTTP/1.1
-Host: localhost:44346
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkRCNzIxMDhEOTJCOEU1MUJDREJBREM2NUREMjBEMzM3NjkyNEI0N0YiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5zb21lZGlzYWJsZWRjb21wYW55LmNvbS8iLCJhdWQiOiJodHRwczovL3d3dy53b3JsZHBheS5jb20vIiwiZXhwIjoxNTY0OTQyMTEzfQ.KTk0IJbiCnqcx1dNpLkYpM3-hAYP1zJvpuD_7SkT3MoamtSAzRdtfkFZblK0spZ8Tkxiu_rs51OR0Ot2Dge367Ba_e6T83stjc_1FMLvDliK_1ITa8b9bZnztwobUKJh4V-unIebcyRAz0vIGpj2YW-SoUdAHIgDH6wSe4gRCm4gOUFtN-PIf8LTTuied8XgLgI3BOkEIkZiIEtTpqT5LJId48DzPtBwixcZVZYYUsutd2VugCjpHpShWpARG9Hn43JVXcimnzNgF0h3hAL4_vAnu5iNtd6nT5hVJnhNSxkPwGl1OzjXWGVLtJCTLj8lkUOzvD9VCIOKpClii9xCaw
+POST https://localhost:44346/api/values HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkRCNzIxMDhEOTJCOEU1MUJDREJBREM2NUREMjBEMzM3NjkyNEI0N0YiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5zb21lZGlzYWJsZWRjb21wYW55LmNvbS8iLCJhdWQiOiJodHRwczovL3d3dy53b3JsZHBheS5jb20vIiwiZXhwIjoxNTY1MTE3MzIzLCJib2R5aGFzaCI6IjYwNDAzYmJkNjM1NTQ5YWYzODg2MWQ3ZTI3MzkxMzI5YzhlNDMzOTU3YmExZTBlY2E5MmNlZWRkMDJmMWY4MjMiLCJoYXNodHlwZSI6InNoYTI1NiJ9.BJWHkXajGgsuX6kuMRA8DzUcV4inYLvgvmDr5_xn4XV2tNlf2G2ClX0IOhnI1VLBxHHe7xmKGOb0r8C89LW4qCzcsoGOW_HEdvpP4QXJ_PVWKD98l6l-e9NLQd-9InUk4Df2y-qbpQtHGjrTjpVRTpvvSFpPPwqDoll-IDEn3xeHmffyMvjJTJ720xk7u4SJY6E-LFNQHMjcVyLGNy2_BSxQEXCnqJzPeO34hUqD06-qWbHv4pnPaHN_oGPx8GNrf2z4vsxZMMCmj-E_YxuKgId2O6WhzIEOEw4oDeup8ciy73XjmAhu97X8wqqQErocE-iqReApGazOlmSFtve1ug
 Accept: application/json, text/json, text/x-json, text/javascript, application/xml, text/xml
 User-Agent: RestSharp/106.6.10.0
 Connection: Keep-Alive
 Accept-Encoding: gzip, deflate
+Content-Type: application/json
+Content-Length: 741
+Host: localhost:44346
+
+{"ISO8583_BASE64":"AhkwMjAw8jxEgQCAgCAAAAAAAAAAIjE2NTQ5OTk5MDEyMzQ1Njc4MTAwMzAwMDAwMDAwMDAwMDAyODA4MDExODQ2MTAwMDAwNDUxMjQ2MTAwODAxMjAwNTU4MTIwMTEwMDA2MDIzNDAwMTQ2NjMgICA4NDAwMTIwMDAwMDEwMDAwMDEwMTUyMTExMDE2NTQwMDExMDEwMDAzODREAAQAAAAAADMyYzBmM2VlOTA1ODU1NDMzNzg2ZGE0MTdmZTFiNDNjNTcxMTAwMzM1MjE0QWRkaXRpb25hbERhdGExMTAyMTFFeHRlcm5hbFRJRDE4MTAxMzI2NjUyMThHbG9iYWxQT1NFbnRyeU1vZGUyMTIyMTAxMDA3MDAwMDAyMjBHbG9iYWxQcm9jZXNzaW5nQ29kZTE2MDAzMDAwMjE4R2xvYmFsVGVybWluYWxUeXBlMTNEQzIxNkxhbmVJRDEwMjEwTWFya2V0RGF0YTIxM2FGdDAwMDAwMDAwMDEyMThQdXJjaGFzaW5nQ2FyZERhdGEyOTA8P3htbCB2ZXJzaW9uPSIxLjAiIGVuY29kaW5nPSJ1dGYtOCI/PjxQdXJjaGFzaW5nQ2FyZERhdGE+PENvbnRhY3QgLz48L1B1cmNoYXNpbmdDYXJkRGF0YT4yMTdUcmFuc2FjdGlvblN0YXR1czExMDIxN1Zpc2FFQ29tbUdvb2RzSW5kMTA="}
 
 HTTP/1.1 401 Unauthorized
 Transfer-Encoding: chunked
 Content-Type: application/problem+json; charset=utf-8
 Server: Microsoft-IIS/10.0
 X-Powered-By: ASP.NET
-Date: Sun, 04 Aug 2019 18:08:33 GMT
+Date: Tue, 06 Aug 2019 18:48:44 GMT
 
 8f
-{"type":"https://tools.ietf.org/html/rfc7235#section-3.1","title":"Unauthorized","status":401,"traceId":"80000006-0003-fc00-b63f-84710c7967bb"}
+{"type":"https://tools.ietf.org/html/rfc7235#section-3.1","title":"Unauthorized","status":401,"traceId":"8000000e-0000-ff00-b63f-84710c7967bb"}
 0
 
+-----------------------------------------------------------------
+Typical for valid user when the body has been modified
+-----------------------------------------------------------------
+POST https://localhost:44346/api/values HTTP/1.1
+Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjFERTJERjQ2NkQyMTg4RDMyRjc0ODdCMjlCQzc2OTExNURDNTM0NzIiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5kYXRhY2Fwc3lzdGVtcy5jb20vIiwiYXVkIjoiaHR0cHM6Ly93d3cud29ybGRwYXkuY29tLyIsImV4cCI6MTU2NTExNzE5NSwiYm9keWhhc2giOiI2MDQwM2JiZDYzNTU0OWFmMzg4NjFkN2UyNzM5MTMyOWM4ZTQzMzk1N2JhMWUwZWNhOTJjZWVkZDAyZjFmODIzIiwiaGFzaHR5cGUiOiJzaGEyNTYifQ.I2Aj_bMj9YCWeY56h-bC1uSLu4a9GUQIC3SwbYRnWSBsg_JiAaRrs6bK5iycyavXMA-9pUseBC6HurYGiIGYStwro7RZbrn83UGOnKFOBHLvB3mmQ4DQ4DP4dr1_JaZDpPvO0E9nwv4SBkjUZ-iVOuZ0b2Q2HrK0I5WJVIZouij_5GiHdkt97LoHZODQPkV30jNeVdj-52kwC5HjKvgrGAa6WDchRDzaY6JjwAcngVZy9rhclf23ajj0GmPOcWjfviakh8zZZK7BANZnpQ8NvsxBVWlhIwnFVHglqKA9Jvz5aASIlS-QGz4M0kCehsPLeQXupvzekjFe6Rxz1zFJKw
+Accept: application/json, text/json, text/x-json, text/javascript, application/xml, text/xml
+User-Agent: RestSharp/106.6.10.0
+Connection: Keep-Alive
+Accept-Encoding: gzip, deflate
+Content-Type: application/json
+Content-Length: 750
+Host: localhost:44346
 
+"{\"ISO8583_BASE64\":\"AhkwMjAw8jxEgQCAgCAAAAAAAAAAIjE2NTQ5OTk5MDEyMzQ1Njc4MTAwMzAwMDAwMDAwMDAwMDAyODA4MDExODQ2MTAwMDAwNDUxMjQ2MTAwODAxMjAwNTU4MTIwMTEwMDA2MDIzNDAwMTQ2NjMgICA4NDAwMTIwMDAwMDEwMDAwMDEwMTUyMTExMDE2NTQwMDExMDEwMDAzODREAAQAAAAAADMyYzBmM2VlOTA1ODU1NDMzNzg2ZGE0MTdmZTFiNDNjNTcxMTAwMzM1MjE0QWRkaXRpb25hbERhdGExMTAyMTFFeHRlcm5hbFRJRDE4MTAxMzI2NjUyMThHbG9iYWxQT1NFbnRyeU1vZGUyMTIyMTAxMDA3MDAwMDAyMjBHbG9iYWxQcm9jZXNzaW5nQ29kZTE2MDAzMDAwMjE4R2xvYmFsVGVybWluYWxUeXBlMTNEQzIxNkxhbmVJRDEwMjEwTWFya2V0RGF0YTIxM2FGdDAwMDAwMDAwMDEyMThQdXJjaGFzaW5nQ2FyZERhdGEyOTA8P3htbCB2ZXJzaW9uPSIxLjAiIGVuY29kaW5nPSJ1dGYtOCI/PjxQdXJjaGFzaW5nQ2FyZERhdGE+PENvbnRhY3QgLz48L1B1cmNoYXNpbmdDYXJkRGF0YT4yMTdUcmFuc2FjdGlvblN0YXR1czExMDIxN1Zpc2FFQ29tbUdvb2RzSW5kMTA=\"}123"
 
+HTTP/1.1 400 Bad Request
+Content-Type: application/problem+json; charset=utf-8
+Server: Microsoft-IIS/10.0
+X-Powered-By: ASP.NET
+Date: Tue, 06 Aug 2019 18:46:36 GMT
+Content-Length: 144
+
+{"type":"https://tools.ietf.org/html/rfc7231#section-6.5.1","title":"Bad Request","status":400,"traceId":"80000002-0002-fd00-b63f-84710c7967bb"}

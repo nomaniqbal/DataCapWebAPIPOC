@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WebApi.Shared.Utilites
+namespace WebApi.Shared.Utilities
 {
     /// <summary>
     /// This is a set of extension methods to support converting to/from the Epoch Seconds used in JWT Tokens
@@ -10,7 +10,7 @@ namespace WebApi.Shared.Utilites
     /// <remarks>
     /// the number of seconds between a particular date and time that starts at the Unix Epoch on January 1st, 1970 at UTC.
     /// </remarks>
-    internal static class DateTimeExtensionMethods
+    public static class DateTimeExtensionMethods
     {
         static DateTime EPOCH_BASE_DATETIME = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 

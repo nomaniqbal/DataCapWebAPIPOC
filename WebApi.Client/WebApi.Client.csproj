@@ -2,9 +2,9 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>WebApi.Client</RootNamespace>
-    <FileVersion>1.19.0804.38</FileVersion>
+    <FileVersion>1.19.0806.14</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

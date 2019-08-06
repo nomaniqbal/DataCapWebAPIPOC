@@ -14,7 +14,7 @@ namespace WebApi.Shared.Controllers
     /// </remarks>
     public static class CertificateController
     {
-        const string CERT_FOLDER_PATHNAME = @"C:\Users\xtobr\Source\Repos\Worldpay\DataCapWebAPIPOC\ClientCertificates";
+        const string CERT_FOLDER_PATHNAME = @"C:\Users\tom.bruns\Source\Repos\DataCapWebAPIPOC\ClientCertificates";
         const string CERT_PWD_FILENAME = @"Password.txt";
 
         /// <summary>Gets the certificate with thumbprint.</summary>
