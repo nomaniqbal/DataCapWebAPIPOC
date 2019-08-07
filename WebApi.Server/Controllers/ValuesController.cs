@@ -113,9 +113,8 @@ namespace WebApi.Server.Controllers
                 else
                 {
                     // at this point this controller would add the identity of the authenticated caller as a new HTTP header and call a downstream webapi
-
-
-                    // this part would typically be in the downstream client and called 
+                    // this part would typically be in the downstream client and called using await
+                    
                     // validate that the body has not body modified
                     string hash = httpBody.SHA256Hash();
                     (string hashType, string bodyHash) = JwtController.GetBodyHashInfo(jwtToken.Payload);
