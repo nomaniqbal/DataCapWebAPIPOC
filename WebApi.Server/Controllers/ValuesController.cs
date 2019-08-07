@@ -71,7 +71,7 @@ namespace WebApi.Server.Controllers
         // POST api/values
         [HttpPost]
         //public ActionResult<string> Post([FromBody] string rawRequest)
-        public ActionResult<string> Post()
+        public async Task<ActionResult<string>> Post()
         {
             // note: I specficially choose NOT to use the [FromBody] approach to make debugging easier
             //          if we use the [FromBody] approach this method never get control if the body cannot be correctly deserialized
@@ -114,6 +114,8 @@ namespace WebApi.Server.Controllers
                 {
                     // at this point this controller would add the identity of the authenticated caller as a new HTTP header and call a downstream webapi
 
+
+                    // this part would typically be in the downstream client and called 
                     // validate that the body has not body modified
                     string hash = httpBody.SHA256Hash();
                     (string hashType, string bodyHash) = JwtController.GetBodyHashInfo(jwtToken.Payload);
