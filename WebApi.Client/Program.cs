@@ -120,8 +120,9 @@ namespace WebApi.Client
                         AuthCRequestBE authcRequest = IsoMsgBuilder.GetAuthMsg();
                         string httpBody = authcRequest.ToString();
                         string jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
-                        
-                        if(choiceIndex == MOD_PAYLOAD_OPTION)
+                        string downstreamJwtToken = (choiceIndex > 0) ? JwtController.CreateDownstreamJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
+
+                        if (choiceIndex == MOD_PAYLOAD_OPTION)
                         {
                             httpBody = httpBody + "123";
                         }

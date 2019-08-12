@@ -26,5 +26,8 @@ namespace WebApi.Shared.Entities
 
         // This will be used as the subject in the JWT
         public string Company { get; set; }
+
+        // This value will be supplied to the caller to include in the JWT they send
+        public string ClientID { get; set; }
     }
 }
