@@ -4,7 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <RootNamespace>WebApi.Client</RootNamespace>
-    <FileVersion>1.19.0814.6</FileVersion>
+    <FileVersion>1.19.0814.9</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

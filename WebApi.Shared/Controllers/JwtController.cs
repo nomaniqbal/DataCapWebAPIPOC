@@ -48,7 +48,8 @@ namespace WebApi.Shared.Controllers
         public static readonly string CLIENT_ID_CLAIM_NAME = @"client_id";
         public static readonly string CLIENT_PUBK_CLAIM_NAME = @"client_pubk";
 
-        private static Dictionary<string, JwtHeader> _cache = new Dictionary<string, JwtHeader>();
+        private static Dictionary<string, JwtHeader> _createCache = new Dictionary<string, JwtHeader>();
+        private static Dictionary<string, SecurityKey> _valdiateCache = new Dictionary<string, SecurityKey>();
 
         /// <summary>Creates the JWT token.</summary>
         /// <param name="userName"></param>
@@ -63,7 +64,7 @@ namespace WebApi.Shared.Controllers
             JwtHeader header = null;
             var userInfo = UserController.GetUserInfo(userName);
 
-            if (!_cache.TryGetValue(userName, out header))
+            if (!_createCache.TryGetValue(userName, out header))
             {
                 if (ttlMinutes < 1 || ttlMinutes > 10)
                 {
@@ -80,7 +81,7 @@ namespace WebApi.Shared.Controllers
                 header = new JwtHeader(credentials);
 
                 // add to the cache
-                _cache.Add(userName, header);
+                _createCache.Add(userName, header);
             }
 
             // Define the JWT Payload
@@ -261,11 +262,19 @@ namespace WebApi.Shared.Controllers
                 return (false, string.Empty, null);
             }
 
-            // load the cert we want to use to validate the JWT
-            var certificate = CertificateController.GetCertificateWithThumbprint(userInfo.KeyThumbprint);
+
 
             // create a security key from the certificate
-            SecurityKey key = new X509SecurityKey(certificate);
+            SecurityKey key = null;
+
+            if (!_valdiateCache.TryGetValue(userInfo.KeyThumbprint, out key))
+            {
+                // load the cert we want to use to validate the JWT
+                var certificate = CertificateController.GetCertificateWithThumbprint(userInfo.KeyThumbprint);
+                key = new X509SecurityKey(certificate);
+
+                _valdiateCache.Add(userInfo.KeyThumbprint, key);
+            }
 
             // setup the token validation parameters
             TokenValidationParameters validationParameters =

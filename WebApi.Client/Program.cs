@@ -138,7 +138,13 @@ namespace WebApi.Client
                         stw.Start();
                         var dsT = JwtController.ValidateJWTToken(downstreamJwtToken, JwtController.AUDIENCE);
                         stw.Stop();
-                        var validateJWTElapsed = stw.ElapsedMilliseconds;
+                        var validate1stJWTElapsed = stw.ElapsedMilliseconds;
+
+                        stw.Reset();
+                        stw.Start();
+                        dsT = JwtController.ValidateJWTToken(downstreamJwtToken, JwtController.AUDIENCE);
+                        stw.Stop();
+                        var validate2ndJWTElapsed = stw.ElapsedMilliseconds;
 
                         if (choiceIndex == MOD_PAYLOAD_OPTION)
                         {
@@ -168,7 +174,8 @@ namespace WebApi.Client
 
                         Console.WriteLine($"Create 1st JWT: [{create1stJWTElapsed} mSec]");
                         Console.WriteLine($"Create 2nd JWT: [{create2ndJWTElapsed} mSec]");
-                        Console.WriteLine($"Valdiate JWT: [{validateJWTElapsed} mSec]");
+                        Console.WriteLine($"Valdiate 1st JWT: [{validate1stJWTElapsed} mSec]");
+                        Console.WriteLine($"Valdiate 2nd JWT: [{validate2ndJWTElapsed} mSec]");
 
                         Console.WriteLine();
                         Console.WriteLine($" ==> Press <enter> to continue");
