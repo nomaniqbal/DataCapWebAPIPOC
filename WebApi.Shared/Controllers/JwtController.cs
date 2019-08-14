@@ -48,6 +48,8 @@ namespace WebApi.Shared.Controllers
         public static readonly string CLIENT_ID_CLAIM_NAME = @"client_id";
         public static readonly string CLIENT_PUBK_CLAIM_NAME = @"client_pubk";
 
+        private static Dictionary<string, JwtHeader> _cache = new Dictionary<string, JwtHeader>();
+
         /// <summary>Creates the JWT token.</summary>
         /// <param name="userName"></param>
         /// <param name="subject">The subject.</param>
@@ -58,21 +60,28 @@ namespace WebApi.Shared.Controllers
         /// <remarks>This would be used on the client side</remarks>
         public static string CreateJWTToken(string userName, string subject, string audience, int ttlMinutes, string httpBody)
         {
+            JwtHeader header = null;
             var userInfo = UserController.GetUserInfo(userName);
 
-            if(ttlMinutes < 1 || ttlMinutes > 10)
+            if (!_cache.TryGetValue(userName, out header))
             {
-                throw new ArgumentException($"ttlMinutes paramter value of: [{ttlMinutes}] must be from 1 to 10");
+                if (ttlMinutes < 1 || ttlMinutes > 10)
+                {
+                    throw new ArgumentException($"ttlMinutes paramter value of: [{ttlMinutes}] must be from 1 to 10");
+                }
+
+                // Load the Certificate
+                var certificate = CertificateController.GetCertificateWithThumbprint(userInfo.KeyThumbprint);
+
+                // Represents the cryptographic key and security algorithms that are used to generate a digital signature.
+                var credentials = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
+
+                // Create a header class that will use the supplied credentials
+                header = new JwtHeader(credentials);
+
+                // add to the cache
+                _cache.Add(userName, header);
             }
-
-            // Load the Certificate
-            var certificate = CertificateController.GetCertificateWithThumbprint(userInfo.KeyThumbprint);
-
-            // Represents the cryptographic key and security algorithms that are used to generate a digital signature.
-            var credentials = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
-
-            // Create a header class that will use the supplied credentials
-            var header = new JwtHeader(credentials);
 
             // Define the JWT Payload
             //  Note: the specifc content required for this use case (Purchase Auth) needs to be determined
@@ -131,7 +140,7 @@ namespace WebApi.Shared.Controllers
             return tokenString;
         }
 
-        public static string CreateDownstreamJWTToken(string userName, string subject, string audience, int ttlMinutes, string httpBody)
+        public static string CreateDownstreamJWTToken(string userName, string subject, string audience, int ttlMinutes, string upstreamjwt)
         {
             var userInfo = UserController.GetUserInfo(userName);
 
@@ -141,7 +150,9 @@ namespace WebApi.Shared.Controllers
             }
 
             // Load the Certificate
-            var certificate = CertificateController.GetCertificateWithThumbprint(userInfo.KeyThumbprint);
+            var certificate = CertificateController.GetCertificateForDP();
+
+            #region Experimenting with Pubic Key
             string publicKey = certificate.GetPublicKeyString();
             byte[] bytes = new byte[publicKey.Length * sizeof(char)];
             System.Buffer.BlockCopy(publicKey.ToCharArray(), 0, bytes, 0, bytes.Length);
@@ -158,6 +169,7 @@ namespace WebApi.Shared.Controllers
             //Import key parameters into RSA.
             RSA.ImportParameters(RSAKeyInfo);
             // ===================
+            #endregion
 
             // Represents the cryptographic key and security algorithms that are used to generate a digital signature.
             var credentials = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
@@ -167,26 +179,13 @@ namespace WebApi.Shared.Controllers
 
             // Define the JWT Payload
             //  Note: the specifc content required for this use case (Purchase Auth) needs to be determined
-            JwtPayload payload = null;
-            if (!string.IsNullOrEmpty(httpBody))
-            {
-                payload = new JwtPayload
-                            {
-                               { "sub", subject },
-                               { "aud", audience },
-                               { "exp", DateTime.UtcNow.AddMinutes(ttlMinutes).ToEpochSeconds() },
-                                { CLIENT_PUBK_CLAIM_NAME, publicKey }
-                            };
-            }
-            else
-            {
-                payload = new JwtPayload
+            JwtPayload payload = new JwtPayload
                             {
                                { "sub", subject },
                                { "aud", audience },
                                { "exp", DateTime.UtcNow.AddMinutes(15).ToEpochSeconds() },
+                               { "ujwt", upstreamjwt },
                             };
-            }
 
             // create the JWT
             var secToken = new JwtSecurityToken(header, payload);

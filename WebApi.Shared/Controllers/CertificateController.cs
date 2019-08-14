@@ -16,6 +16,8 @@ namespace WebApi.Shared.Controllers
     {
         const string CERT_FOLDER_PATHNAME = @"C:\Users\tom.bruns\Source\Repos\DataCapWebAPIPOC\ClientCertificates";
         const string CERT_PWD_FILENAME = @"Password.txt";
+        const string DP_CERT_FILENAME = @"DP_SelfSignedCertificate.pfx";
+        const string DP_CERT_THUMBPRINT = @"FAAEC72B6CE1F89919B500AA03C88A291950FC9B";
 
         /// <summary>Gets the certificate with thumbprint.</summary>
         /// <param name="signingKeyThumbprint">The signing key thumbprint.</param>
@@ -26,6 +28,13 @@ namespace WebApi.Shared.Controllers
             var userInfo = UserController.GetUserWithKeyThumbprint(signingKeyThumbprint);
 
             var certificate = LoadCertFromFile(userInfo.KeyFileName, CERT_PWD_FILENAME, signingKeyThumbprint);
+
+            return certificate;
+        }
+
+        internal static X509Certificate2 GetCertificateForDP()
+        {
+            var certificate = LoadCertFromFile(DP_CERT_FILENAME, CERT_PWD_FILENAME, DP_CERT_THUMBPRINT);
 
             return certificate;
         }

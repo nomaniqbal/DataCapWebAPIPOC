@@ -17,6 +17,7 @@ using WebApi.Shared.Controllers;
 using WebApi.Client.ISO8583;
 using WebApi.Shared.Entities;
 using System.Linq;
+using System.Diagnostics;
 
 namespace WebApi.Client
 {
@@ -119,8 +120,25 @@ namespace WebApi.Client
                         int ttlMinutes = 2; 
                         AuthCRequestBE authcRequest = IsoMsgBuilder.GetAuthMsg();
                         string httpBody = authcRequest.ToString();
+
+                        Stopwatch stw = new Stopwatch();
+                        stw.Start();
                         string jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
-                        string downstreamJwtToken = (choiceIndex > 0) ? JwtController.CreateDownstreamJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
+                        stw.Stop();
+                        var create1stJWTElapsed = stw.ElapsedMilliseconds;
+
+                        stw.Reset();
+                        stw.Start();
+                        jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
+                        stw.Stop();
+                        var create2ndJWTElapsed = stw.ElapsedMilliseconds;
+
+                        string downstreamJwtToken = (choiceIndex > 0) ? JwtController.CreateDownstreamJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, jwtToken) : string.Empty;
+                        stw.Reset();
+                        stw.Start();
+                        var dsT = JwtController.ValidateJWTToken(downstreamJwtToken, JwtController.AUDIENCE);
+                        stw.Stop();
+                        var validateJWTElapsed = stw.ElapsedMilliseconds;
 
                         if (choiceIndex == MOD_PAYLOAD_OPTION)
                         {
@@ -147,6 +165,10 @@ namespace WebApi.Client
                         Console.WriteLine($"content: [{content}]");
 
                         Console.ResetColor();
+
+                        Console.WriteLine($"Create 1st JWT: [{create1stJWTElapsed} mSec]");
+                        Console.WriteLine($"Create 2nd JWT: [{create2ndJWTElapsed} mSec]");
+                        Console.WriteLine($"Valdiate JWT: [{validateJWTElapsed} mSec]");
 
                         Console.WriteLine();
                         Console.WriteLine($" ==> Press <enter> to continue");

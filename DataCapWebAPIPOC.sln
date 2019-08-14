@@ -7,6 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApi.Client", "WebApi.Cli
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientCertificates", "ClientCertificates", "{F3E02E05-C3D1-4E05-A38B-A4F0C9A4411D}"
 	ProjectSection(SolutionItems) = preProject
+		ClientCertificates\DP_SelfSignedCertificate.pfx = ClientCertificates\DP_SelfSignedCertificate.pfx
 		ClientCertificates\Password.txt = ClientCertificates\Password.txt
 		ClientCertificates\UserA_SelfSignedCertificate.pfx = ClientCertificates\UserA_SelfSignedCertificate.pfx
 		ClientCertificates\UserB_SelfSignedCertificate.pfx = ClientCertificates\UserB_SelfSignedCertificate.pfx

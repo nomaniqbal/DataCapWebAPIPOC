@@ -15,6 +15,7 @@ Powershell command to create a new certificate (run as an admin!)
 New-SelfSignedCertificate -Type Custom -Subject "CN=DO_NOT_USE_IN_PROD_USER_A" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2","2.5.29.17={text}upn=joe@contoso.com") -KeyUsage DigitalSignature -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation "Cert:\LocalMachine\My"
 New-SelfSignedCertificate -Type Custom -Subject "CN=DO_NOT_USE_IN_PROD_USER_B" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2","2.5.29.17={text}upn=joe@contoso.com") -KeyUsage DigitalSignature -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation "Cert:\LocalMachine\My"
 New-SelfSignedCertificate -Type Custom -Subject "CN=DO_NOT_USE_IN_PROD_USER_C" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2","2.5.29.17={text}upn=joe@contoso.com") -KeyUsage DigitalSignature -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation "Cert:\LocalMachine\My"
+New-SelfSignedCertificate -Type Custom -Subject "CN=DO_NOT_USE_IN_PROD_DP" -TextExtension @("2.5.29.37={text}1.3.6.1.5.5.7.3.2","2.5.29.17={text}upn=joe@contoso.com") -KeyUsage DigitalSignature -KeyAlgorithm RSA -KeyLength 2048 -CertStoreLocation "Cert:\LocalMachine\My"
 
 The result will be in the current machine's cert store
 After running you can go into MMC "cert" (ie Manage Computer Certificates)
