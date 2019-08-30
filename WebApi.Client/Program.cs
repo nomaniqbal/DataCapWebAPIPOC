@@ -127,6 +127,9 @@ namespace WebApi.Client
                         stw.Stop();
                         var create1stJWTElapsed = stw.ElapsedMilliseconds;
 
+                        // test ben token
+                        string benToken = JwtController.CreateBENJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes);
+
                         stw.Reset();
                         stw.Start();
                         jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;

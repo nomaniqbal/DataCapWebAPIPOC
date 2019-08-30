@@ -141,6 +141,72 @@ namespace WebApi.Shared.Controllers
             return tokenString;
         }
 
+        public static string CreateBENJWTToken(string userName, string subject, string audience, int ttlMinutes)
+        {
+            JwtHeader header = null;
+            var userInfo = UserController.GetUserInfo(userName);
+
+            if (!_createCache.TryGetValue(userName, out header))
+            {
+                if (ttlMinutes < 1 || ttlMinutes > 10)
+                {
+                    throw new ArgumentException($"ttlMinutes paramter value of: [{ttlMinutes}] must be from 1 to 10");
+                }
+
+                // Load the Certificate
+                var certificate = CertificateController.GetCertificateWithThumbprint(userInfo.KeyThumbprint);
+
+                // Represents the cryptographic key and security algorithms that are used to generate a digital signature.
+                var credentials = new SigningCredentials(new X509SecurityKey(certificate), "RS256");
+
+                // Create a header class that will use the supplied credentials
+                header = new JwtHeader(credentials);
+
+                // add to the cache
+                _createCache.Add(userName, header);
+            }
+
+            // Define the JWT Payload
+            //  Note: the specifc content required for this use case (Purchase Auth) needs to be determined
+            JwtPayload payload = new JwtPayload
+                {
+                    { "iss", @"Vantiv" },
+                    { "exp", DateTime.UtcNow.AddMinutes(15).ToEpochSeconds() },
+                    { @"http://vantiv.com/esauth/api/Notification/id", 123456 }
+                };
+
+            // create the JWT
+            var secToken = new JwtSecurityToken(header, payload);
+            var handler = new JwtSecurityTokenHandler();
+
+            // convert the Token to a String
+            var tokenString = handler.WriteToken(secToken);
+
+            /*
+                Sample JWT generated             
+                eyJhbGciOiJSUzI1NiIsImtpZCI6IjFERTJERjQ2NkQyMTg4RDMyRjc0ODdCMjlCQzc2OTExNURDNTM0NzIiLCJ0eXAiOiJKV1QifQ.eyJzdWIiOiJodHRwczovL3d3dy5kYXRhY2Fwc3lzdGVtcy5jb20vIiwiYXVkIjoiaHR0cHM6Ly93d3cud29ybGRwYXkuY29tLyIsImV4cCI6MTU2NTAzNjcyMCwiYm9keWhhc2giOiI4NTFkOTNkMjMwYmE0ZThiMzVkNWE1ZjUwYWY3N2Q2MDgxNmJiY2ZjZGM4NWE4ODUwODZkMzhiZDVjMzM5NjViIiwiaGFzaHR5cGUiOiJzaGEyNTYifQ.bD_Aw72U9niNcy_SWdmmSyb_bcpWe6itbni5D0TunC3lf3_SkGWwnWKRlWViwp59VtC6Vj0B3M5ouXvQ1aI4ehsB6R03uAMkh4zW5HQKhccbInhtpNSeOmGh2IsjZfBK2w8_gs7z3Wsqhvio9N2PTWq9wtAuVUdNCeaBBhtsr_WP8QQjLpm0GswqGLARZc07Rw6bxOIHASsF-4Doy-huDLmydBggjO5YS2y2Wp2_MFmCIawCYvnnrSnhxzvZ1iz7bIwHX614VPlDHc2PlspLp7Lal5oJTOBoh284njuOgVlxwKaW2YjZS0W3dmUgNrro3_JDEvWeJvvgiRXk58bXdw
+
+                using https://jwt.io/
+                Header
+                {
+                  "alg": "RS256",
+                  "kid": "1DE2DF466D2188D32F7487B29BC769115DC53472",
+                  "typ": "JWT"
+                }
+
+                Payload
+                {
+                  "sub": "https://www.datacapsystems.com/",
+                  "aud": "https://www.worldpay.com/",
+                  "exp": 1565036720,
+                  "bodyhash": "851d93d230ba4e8b35d5a5f50af77d60816bbcfcdc85a885086d38bd5c33965b",
+                  "hashtype": "sha256"
+                }
+            */
+
+            return tokenString;
+        }
+
         public static string CreateDownstreamJWTToken(string userName, string subject, string audience, int ttlMinutes, string upstreamjwt)
         {
             var userInfo = UserController.GetUserInfo(userName);
