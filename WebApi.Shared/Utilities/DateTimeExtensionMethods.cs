@@ -16,11 +16,11 @@ namespace WebApi.Shared.Utilities
 
         public static int ToEpochSeconds(this DateTime date)
         {
-            TimeSpan t = DateTime.UtcNow - EPOCH_BASE_DATETIME;
+            TimeSpan t = date - EPOCH_BASE_DATETIME;
             return (int)t.TotalSeconds;
         }
 
-        public static DateTime FromEpochSeconds(this DateTime date, long epochSeconds)
+        public static DateTime FromEpochSeconds(this long epochSeconds)
         {
             return EPOCH_BASE_DATETIME.AddSeconds(epochSeconds);
         }

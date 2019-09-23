@@ -66,9 +66,9 @@ namespace WebApi.Shared.Controllers
 
             if (!_createCache.TryGetValue(userName, out header))
             {
-                if (ttlMinutes < 1 || ttlMinutes > 10)
+                if (ttlMinutes < 1 || ttlMinutes > 30)
                 {
-                    throw new ArgumentException($"ttlMinutes paramter value of: [{ttlMinutes}] must be from 1 to 10");
+                    throw new ArgumentException($"ttlMinutes paramter value of: [{ttlMinutes}] must be from 1 to 30");
                 }
 
                 // Load the Certificate
@@ -114,6 +114,7 @@ namespace WebApi.Shared.Controllers
             var handler = new JwtSecurityTokenHandler();
 
             // convert the Token to a String
+            handler.TokenLifetimeInMinutes = ttlMinutes;
             var tokenString = handler.WriteToken(secToken);
 
             /*

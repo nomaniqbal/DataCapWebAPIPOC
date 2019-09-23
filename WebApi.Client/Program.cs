@@ -117,7 +117,7 @@ namespace WebApi.Client
                     {
                         // this should be as short as possible to limit ability to fradualently reuse, 
                         //  but long enough to tolerate clock skew between client and service
-                        int ttlMinutes = 2; 
+                        int ttlMinutes = 30; 
                         AuthCRequestBE authcRequest = IsoMsgBuilder.GetAuthMsg();
                         string httpBody = authcRequest.ToString();
 
@@ -128,26 +128,26 @@ namespace WebApi.Client
                         var create1stJWTElapsed = stw.ElapsedMilliseconds;
 
                         // test ben token
-                        string benToken = JwtController.CreateBENJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes);
+                        //string benToken = JwtController.CreateBENJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes);
 
-                        stw.Reset();
-                        stw.Start();
-                        jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
-                        stw.Stop();
-                        var create2ndJWTElapsed = stw.ElapsedMilliseconds;
+                        //stw.Reset();
+                        //stw.Start();
+                        //jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
+                        //stw.Stop();
+                        //var create2ndJWTElapsed = stw.ElapsedMilliseconds;
 
-                        string downstreamJwtToken = (choiceIndex > 0) ? JwtController.CreateDownstreamJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, jwtToken) : string.Empty;
-                        stw.Reset();
-                        stw.Start();
-                        var dsT = JwtController.ValidateJWTToken(downstreamJwtToken, JwtController.AUDIENCE);
-                        stw.Stop();
-                        var validate1stJWTElapsed = stw.ElapsedMilliseconds;
+                        //string downstreamJwtToken = (choiceIndex > 0) ? JwtController.CreateDownstreamJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, jwtToken) : string.Empty;
+                        //stw.Reset();
+                        //stw.Start();
+                        //var dsT = JwtController.ValidateJWTToken(downstreamJwtToken, JwtController.AUDIENCE);
+                        //stw.Stop();
+                        //var validate1stJWTElapsed = stw.ElapsedMilliseconds;
 
-                        stw.Reset();
-                        stw.Start();
-                        dsT = JwtController.ValidateJWTToken(downstreamJwtToken, JwtController.AUDIENCE);
-                        stw.Stop();
-                        var validate2ndJWTElapsed = stw.ElapsedMilliseconds;
+                        //stw.Reset();
+                        //stw.Start();
+                        //dsT = JwtController.ValidateJWTToken(downstreamJwtToken, JwtController.AUDIENCE);
+                        //stw.Stop();
+                        //var validate2ndJWTElapsed = stw.ElapsedMilliseconds;
 
                         if (choiceIndex == MOD_PAYLOAD_OPTION)
                         {
@@ -176,9 +176,9 @@ namespace WebApi.Client
                         Console.ResetColor();
 
                         Console.WriteLine($"Create 1st JWT: [{create1stJWTElapsed} mSec]");
-                        Console.WriteLine($"Create 2nd JWT: [{create2ndJWTElapsed} mSec]");
-                        Console.WriteLine($"Valdiate 1st JWT: [{validate1stJWTElapsed} mSec]");
-                        Console.WriteLine($"Valdiate 2nd JWT: [{validate2ndJWTElapsed} mSec]");
+                        //Console.WriteLine($"Create 2nd JWT: [{create2ndJWTElapsed} mSec]");
+                        //Console.WriteLine($"Valdiate 1st JWT: [{validate1stJWTElapsed} mSec]");
+                        //Console.WriteLine($"Valdiate 2nd JWT: [{validate2ndJWTElapsed} mSec]");
 
                         Console.WriteLine();
                         Console.WriteLine($" ==> Press <enter> to continue");
@@ -223,13 +223,17 @@ namespace WebApi.Client
         /// <returns>System.ValueTuple&lt;HttpStatusCode, System.String&gt;.</returns>
         static (HttpStatusCode responseCode, string content) CallWebApiPost(string jwtToken, string bodyContent)
         {
+            // https://ws-stage.infoftps.com:4443/JWT/Validate
+
             // build the url 
-            string baseWebUrl = @"localhost:44346";
+            //string baseWebUrl = @"localhost:44346";
+            string baseWebUrl = @"ws-stage.infoftps.com:4443";
             string url = string.Format($"https://{baseWebUrl}");
 
             var client = new RestClient(url);
 
-            var request = new RestRequest("/api/values", Method.POST, DataFormat.Json);
+            // var request = new RestRequest("/api/values", Method.POST, DataFormat.Json);
+            var request = new RestRequest("/JWT/Validate", Method.POST, DataFormat.Json);
             request.AddBody(bodyContent);
 
             // if a JWT is available, add a Bearer Auth Token

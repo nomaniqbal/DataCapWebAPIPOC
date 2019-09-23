@@ -10,6 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ClientCertificates", "Clien
 		ClientCertificates\DP_SelfSignedCertificate.pfx = ClientCertificates\DP_SelfSignedCertificate.pfx
 		ClientCertificates\Password.txt = ClientCertificates\Password.txt
 		ClientCertificates\UserA_SelfSignedCertificate.pfx = ClientCertificates\UserA_SelfSignedCertificate.pfx
+		ClientCertificates\UserA_SelfSignedCertificate_pub.pfx.cer = ClientCertificates\UserA_SelfSignedCertificate_pub.pfx.cer
 		ClientCertificates\UserB_SelfSignedCertificate.pfx = ClientCertificates\UserB_SelfSignedCertificate.pfx
 		ClientCertificates\UserC_SelfSignedCertificate.pfx = ClientCertificates\UserC_SelfSignedCertificate.pfx
 	EndProjectSection
