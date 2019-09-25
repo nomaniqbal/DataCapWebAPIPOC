@@ -29,7 +29,7 @@ namespace WebApi.Client
         }
 
         /// <summary>
-        /// Consoles the loop.
+        /// Console Loop
         /// </summary>
         static void ConsoleLoop()
         {
@@ -38,7 +38,7 @@ namespace WebApi.Client
             // load the list of available users
             var users = UserController.LoadUsers();
 
-            // Build a menu of User choices that can used to test
+            // Build a menu of Scenarions that can used to test
             StringBuilder sb = new StringBuilder();
             int userIdx = 1;
             sb.AppendLine();
@@ -54,6 +54,7 @@ namespace WebApi.Client
                 userIdx++;
             }
 
+            // pick a user to use for the Modified Payload
             var goodTestUser = users.Where(u => u.IsEnabled == true).FirstOrDefault();
 
             sb.AppendLine($" [{MOD_PAYLOAD_OPTION}] {goodTestUser.User} (Modified Body)");
@@ -65,6 +66,11 @@ namespace WebApi.Client
             int choiceIndex = 0;
             UserIdentityBE selectedUser;
             bool shouldContinue = true;
+            AuthCRequestBE authcRequest = null;
+            string httpBody = string.Empty;
+            Stopwatch stw = null;
+            string jwtToken = string.Empty;
+            long create1stJWTElapsed = 0;
 
             // =========================
             // start the message loop
@@ -115,17 +121,20 @@ namespace WebApi.Client
                     }
                     else
                     {
+                        // ==================================================
                         // this should be as short as possible to limit ability to fradualently reuse, 
                         //  but long enough to tolerate clock skew between client and service
-                        int ttlMinutes = 30; 
-                        AuthCRequestBE authcRequest = IsoMsgBuilder.GetAuthMsg();
-                        string httpBody = authcRequest.ToString();
+                        // ==================================================
+                        int ttlMinutes = 5; 
 
-                        Stopwatch stw = new Stopwatch();
+                        authcRequest = IsoMsgBuilder.GetAuthMsg();
+                        httpBody = authcRequest.ToString();
+
+                        stw = new Stopwatch();
                         stw.Start();
-                        string jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
+                        jwtToken = (choiceIndex > 0) ? JwtController.CreateJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes, httpBody) : string.Empty;
                         stw.Stop();
-                        var create1stJWTElapsed = stw.ElapsedMilliseconds;
+                        create1stJWTElapsed = stw.ElapsedMilliseconds;
 
                         // test ben token
                         //string benToken = JwtController.CreateBENJWTToken(selectedUser.User, selectedUser.Company, JwtController.AUDIENCE, ttlMinutes);
@@ -151,11 +160,14 @@ namespace WebApi.Client
 
                         if (choiceIndex == MOD_PAYLOAD_OPTION)
                         {
+                            // simulate man-in-the middle tampering with the payload
                             httpBody = httpBody + "123";
                         }
 
-                        (HttpStatusCode responseCode, string content) = CallWebApiPost(jwtToken, httpBody);
+                        // make the call
+                        (HttpStatusCode responseCode, IList<Parameter> responseHeaders, string responseContent) = CallWebApiPost(jwtToken, httpBody);
 
+                        // evaluate the response
                         if (responseCode == HttpStatusCode.OK)
                         {
                             Console.ForegroundColor = ConsoleColor.Green;
@@ -171,7 +183,14 @@ namespace WebApi.Client
 
                         Console.WriteLine();
                         Console.WriteLine($"responseCode: [{responseCode.ToString()}]");
-                        Console.WriteLine($"content: [{content}]");
+                        Console.WriteLine();
+                        Console.WriteLine($"headers");
+                        foreach(var responseHeader in responseHeaders)
+                        {
+                            Console.WriteLine($"   {responseHeader.Name} : {responseHeader.Value}");
+                        }
+                        Console.WriteLine();
+                        Console.WriteLine($"content: [{responseContent}]");
 
                         Console.ResetColor();
 
@@ -217,17 +236,18 @@ namespace WebApi.Client
             return (responseCode, content);
         }
 
-        /// <summary>Calls the web API post endpoint.</summary>
-        /// <param name="jwtToken">The JWT token.</param>
-        /// <param name="bodyContent">The Content to post in the request body</param>
-        /// <returns>System.ValueTuple&lt;HttpStatusCode, System.String&gt;.</returns>
-        static (HttpStatusCode responseCode, string content) CallWebApiPost(string jwtToken, string bodyContent)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="jwtToken"></param>
+        /// <param name="bodyContent"></param>
+        /// <returns></returns>
+        static (HttpStatusCode responseCode, IList<Parameter> responseHeaders, string responseContent) CallWebApiPost(string jwtToken, string bodyContent)
         {
+            // Datapower POC endpoint
             // https://ws-stage.infoftps.com:4443/JWT/Validate
-
-            // build the url 
-            //string baseWebUrl = @"localhost:44346";
-            string baseWebUrl = @"ws-stage.infoftps.com:4443";
+            // build the url  
+            string baseWebUrl = @"ws-stage.infoftps.com:4443"; // @"localhost:44346";
             string url = string.Format($"https://{baseWebUrl}");
 
             var client = new RestClient(url);
@@ -244,11 +264,14 @@ namespace WebApi.Client
 
             // call the WebAPI
             IRestResponse response = client.Execute(request);
+
+            // grab parts of the http response
             var responseCode = response.StatusCode;
-            var content = response.Content;
+            var responseContent = response.Content;
+            var responseHeaders = response.Headers;
 
             // return the response
-            return (responseCode, content);
+            return (responseCode, responseHeaders, responseContent);
         }
     }
 }
